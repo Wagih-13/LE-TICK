@@ -100,7 +100,9 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b overflow-hidden"
+            className={`md:hidden overflow-hidden border-b ${
+              isScrolled ? 'bg-background' : 'bg-black/85'
+            }`}
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (

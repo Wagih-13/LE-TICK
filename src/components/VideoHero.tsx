@@ -5,8 +5,7 @@ export default function VideoHero() {
     <section id="videohero" className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden bg-black">
    <video
   className="absolute inset-0 w-full h-full object-cover"
-  src="/videos/watch-hero.mp4"
-  poster="/videos/watch-hero.jpg"
+  src="/Cinematic%20Watch%20Product%20Video%20Commercial%20Example%20_%20Rolex%20Timex%20Omega%20Samsung%20Apple%20Jewelry%20Amazon%20Ad.mp4"
   preload="metadata"
   autoPlay
   muted
