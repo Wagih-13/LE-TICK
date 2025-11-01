@@ -23,7 +23,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-20 md:py-32 bg-radial-bw" ref={ref}>
+    <section className="py-12 sm:py-16 md:py-20 lg:py-32 bg-radial-bw" ref={ref}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -31,11 +31,11 @@ export default function Newsletter() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <Mail className="h-12 w-12 mx-auto mb-6 opacity-90" />
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4" data-testid="text-newsletter-title">
+          <Mail className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-4 sm:mb-6 opacity-90" />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4" data-testid="text-newsletter-title">
             Stay Updated
           </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto" data-testid="text-newsletter-subtitle">
+          <p className="text-base sm:text-lg opacity-90 mb-6 sm:mb-8 max-w-2xl mx-auto px-2" data-testid="text-newsletter-subtitle">
             Subscribe to our newsletter to get updates about new collections, exclusive offers, and special discounts.
           </p>
 
@@ -44,7 +44,7 @@ export default function Newsletter() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+            className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-md mx-auto"
           >
             <Input
               type="email"

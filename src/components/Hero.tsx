@@ -25,12 +25,12 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
       </div>
 
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6"
+          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-4 sm:mb-6 leading-tight"
           data-testid="text-hero-title"
         >
            LE TICK Watches for Every Moment
@@ -40,7 +40,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
+          className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-2xl mx-auto px-2"
           data-testid="text-hero-subtitle"
         >
           Discover our curated collection of luxury timepieces, crafted with precision and designed to last a lifetime.
@@ -50,12 +50,12 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center px-4 sm:px-0"
         >
           <Button
             size="lg"
             onClick={() => scrollToSection('bestsellers')}
-            className="bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 group min-w-[200px]"
+            className="bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 group w-full sm:min-w-[200px] sm:w-auto"
             data-testid="button-shop-now"
           >
             Shop Now
@@ -65,7 +65,7 @@ export default function Hero() {
             size="lg"
             variant="outline"
             onClick={() => scrollToSection('about')}
-            className="bg-white/10 backdrop-blur-md text-white border-white/30 hover:bg-white/20 min-w-[200px]"
+            className="bg-white/10 backdrop-blur-md text-white border-white/30 hover:bg-white/20 w-full sm:min-w-[200px] sm:w-auto"
             data-testid="button-learn-more"
           >
             Learn More

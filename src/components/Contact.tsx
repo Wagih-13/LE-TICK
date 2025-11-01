@@ -29,33 +29,34 @@ export default function Contact() {
     { icon: Phone, label: 'Phone', value: '+02 01150061085' },
     { icon: Mail, label: 'Email', value: 'Amrnjr4@gmail.com' }
   ];
-
+ 
   return (
-    <section id="contact" className="py-20 md:py-32 bg-radial-bw" ref={ref}>
+    <section id="contact" className="py-12 sm:py-16 md:py-20 lg:py-32 bg-radial-bw" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4" data-testid="text-contact-title">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3 sm:mb-4" data-testid="text-contact-title">
             Get In Touch
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto" data-testid="text-contact-subtitle">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-2" data-testid="text-contact-subtitle">
             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
                 <Input
+                  className="py-3 sm:py-4"
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -65,6 +66,7 @@ export default function Contact() {
               </div>
               <div>
                 <Input
+                  className="py-3 sm:py-4"
                   type="email"
                   placeholder="Your Email"
                   value={formData.email}
@@ -75,6 +77,7 @@ export default function Contact() {
               </div>
               <div>
                 <Textarea
+                  className="py-3 sm:py-4"
                   placeholder="Your Message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -93,7 +96,7 @@ export default function Contact() {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {contactInfo.map((info, index) => (
               <Card key={index} className="hover-elevate">
