@@ -1,0 +1,366 @@
+// Prisma Schema for LE TICK E-commerce Backend
+// PostgreSQL with UUID primary keys
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  MANAGER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password_hash String
+  first_name    String
+  last_name     String
+  phone         String?
+  avatar_url    String?
+  role          UserRole    @default(CUSTOMER)
+  status        UserStatus  @default(ACTIVE)
+  is_deleted    Boolean     @default(false)
+  deleted_at    DateTime?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  orders        Order[]
+  reviews       Review[]
+  cart_items    CartItem[]
+  wishlist_items WishlistItem[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image_url   String?
+  parent_id   String?
+  sort_order  Int       @default(0)
+  is_active   Boolean   @default(true)
+  is_deleted  Boolean   @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  parent      Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+
+  @@index([slug])
+  @@index([parent_id])
+  @@map("categories")
+}
+
+model Product {
+  id                String    @id @default(uuid())
+  category_id       String?
+  name              String
+  slug              String    @unique
+  description       String?
+  short_description String?
+  sku               String    @unique
+  price             Decimal   @db.Decimal(10, 2)
+  compare_price     Decimal?  @db.Decimal(10, 2)
+  delivery_fee      Decimal   @default(0) @db.Decimal(10, 2)
+  stock_quantity    Int       @default(0)
+  is_featured       Boolean   @default(false)
+  is_first_collection Boolean @default(false)
+  is_active         Boolean   @default(true)
+  is_deleted        Boolean   @default(false)
+  deleted_at        DateTime?
+  
+  // SEO
+  meta_title        String?
+  meta_description  String?
+  
+  // Stats
+  view_count        Int       @default(0)
+  sale_count        Int       @default(0)
+  
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  category          Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  images            ProductImage[]
+  variants          ProductVariant[]
+  reviews           Review[]
+  cart_items        CartItem[]
+  wishlist_items    WishlistItem[]
+  order_items       OrderItem[]
+
+  @@index([slug])
+  @@index([sku])
+  @@index([category_id])
+  @@map("products")
+}
+
+model ProductImage {
+  id          String   @id @default(uuid())
+  product_id  String
+  url         String
+  alt_text    String?
+  sort_order  Int      @default(0)
+  is_primary  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id])
+  @@map("product_images")
+}
+
+model ProductVariant {
+  id            String   @id @default(uuid())
+  product_id    String
+  name          String
+  sku           String   @unique
+  price         Decimal? @db.Decimal(10, 2)
+  stock_quantity Int     @default(0)
+  size          String?
+  color         String?
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  product       Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id])
+  @@map("product_variants")
+}
+
+model CartItem {
+  id          String   @id @default(uuid())
+  user_id     String
+  product_id  String
+  quantity    Int      @default(1)
+  price       Decimal  @db.Decimal(10, 2)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([product_id])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id          String   @id @default(uuid())
+  user_id     String
+  product_id  String
+  created_at  DateTime @default(now())
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, product_id])
+  @@index([user_id])
+  @@map("wishlist_items")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  user_id         String?
+  order_number    String        @unique
+  status          OrderStatus   @default(PENDING)
+  payment_status  PaymentStatus @default(PENDING)
+  
+  subtotal        Decimal       @db.Decimal(10, 2)
+  tax_amount      Decimal       @default(0) @db.Decimal(10, 2)
+  shipping_amount Decimal       @default(0) @db.Decimal(10, 2)
+  discount_amount Decimal       @default(0) @db.Decimal(10, 2)
+  total           Decimal       @db.Decimal(10, 2)
+  
+  customer_name   String
+  customer_email  String
+  customer_phone  String
+  shipping_address String
+  
+  notes           String?
+  is_deleted      Boolean       @default(false)
+  deleted_at      DateTime?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  user            User?         @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  items           OrderItem[]
+
+  @@index([user_id])
+  @@index([order_number])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String   @id @default(uuid())
+  order_id     String
+  product_id   String
+  product_name String
+  product_sku  String
+  quantity     Int
+  price        Decimal  @db.Decimal(10, 2)
+  delivery_fee Decimal  @default(0) @db.Decimal(10, 2)
+  total        Decimal  @db.Decimal(10, 2)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  order        Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product      Product  @relation(fields: [product_id], references: [id], onDelete: Restrict)
+
+  @@index([order_id])
+  @@map("order_items")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  product_id  String
+  user_id     String
+  rating      Int
+  title       String?
+  comment     String?
+  is_approved Boolean  @default(false)
+  is_deleted  Boolean  @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id])
+  @@index([user_id])
+  @@map("reviews")
+}
+
+model Coupon {
+  id             String    @id @default(uuid())
+  code           String    @unique
+  description    String?
+  discount_type  String
+  discount_value Decimal   @db.Decimal(10, 2)
+  min_purchase   Decimal?  @db.Decimal(10, 2)
+  usage_limit    Int?
+  usage_count    Int       @default(0)
+  is_active      Boolean   @default(true)
+  starts_at      DateTime?
+  expires_at     DateTime?
+  is_deleted     Boolean   @default(false)
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  @@index([code])
+  @@map("coupons")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  user_id    String
+  title      String
+  message    String
+  type       String
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("notifications")
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  level      String
+  message    String
+  context    String?
+  user_id    String?
+  ip_address String?
+  metadata   Json?
+  created_at DateTime @default(now())
+
+  @@index([level])
+  @@index([created_at])
+  @@map("logs")
+}
+
+model SiteSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String?
+  type        String   @default("string")
+  description String?
+  is_public   Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([key])
+  @@index([is_public])
+  @@map("site_settings")
+}
+
+model ContentSection {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  type        String
+  title       String?
+  subtitle    String?
+  content     String?
+  image_url   String?
+  link_url    String?
+  button_text String?
+  sort_order  Int      @default(0)
+  is_active   Boolean  @default(true)
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([slug])
+  @@index([type])
+  @@index([is_active])
+  @@map("content_sections")
+}
